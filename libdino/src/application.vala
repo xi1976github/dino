@@ -10,11 +10,12 @@ public interface Application : GLib.Application {
     public abstract StreamInteractor stream_interactor { get; set; }
     public abstract Plugins.Registry plugin_registry { get; set; }
     public abstract SearchPathGenerator? search_path_generator { get; set; }
-
+    public static bool xversion = false;
     internal static string print_xmpp;
 
     private const OptionEntry[] options = {
         { "print-xmpp", 0, 0, OptionArg.STRING, ref print_xmpp, "Print XMPP stanzas identified by DESC to stderr", "DESC" },
+        { "version", 0, 0, OptionArg.NONE, null, "Shows Dino Version", null },
         { null }
     };
 

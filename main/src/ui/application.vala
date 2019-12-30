@@ -47,6 +47,19 @@ public class Dino.Ui.Application : Gtk.Application, Dino.Application {
         });
     }
 
+    public override int handle_local_options (VariantDict options){
+        if ("version" in options) {
+            print("Dino\n");
+            print(Dino.VERSION.strip().length == 0 ? null : Dino.VERSION);
+            print("\n");
+            print("Dino. Communicating happiness.\n");
+            print("https://dino.im/\n");
+            return 0;
+        }
+    return -1;
+    }
+
+
     public void handle_uri(string jid, string query, Gee.Map<string, string> options) {
         switch (query) {
             case "join":
