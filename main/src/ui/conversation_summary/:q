@@ -28,9 +28,8 @@ public class FileWidget : Box {
     private Spinner spinner;
     private Label mime_label;
     private Stack image_stack;
+    private Clipboard clipboard; //xi
     private Widget content;
-
-    private Gdk.Pixbuf pixbuf2; //xi
 
     private bool pointer_inside = false;
 
@@ -80,7 +79,7 @@ public class FileWidget : Box {
             }
             pixbuf = crop_corners(pixbuf, 3 * image.get_scale_factor());
             Util.image_set_from_scaled_pixbuf(image, pixbuf);
-            pixbuf2 = pixbuf;
+
             Idle.add(get_image_widget.callback);
             return null;
         });
@@ -118,10 +117,9 @@ public class FileWidget : Box {
             }
         });
         open_button1.clicked.connect(() => {
-            Gdk.Display disp = Gdk.Display.get_default();            
-            Gtk.Clipboard cb = Gtk.Clipboard.get_for_display(disp,Gdk.SELECTION_CLIPBOARD);
-            cb.set_image(pixbuf2);
-            cb.store();
+            clipboard = clipboard_get();
+            clipboard.set_image(image);
+            clipboard.store();
         });
 
         Revealer toolbar_revealer = new Revealer() { transition_type=RevealerTransitionType.CROSSFADE, transition_duration=400, visible=true };
