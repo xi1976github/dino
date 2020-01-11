@@ -52,12 +52,14 @@ public class MessageItemWidgetGenerator : WidgetGenerator, Object {
         MessageItem message_item = item as MessageItem;
         Conversation conversation = message_item.conversation;
         Message message = message_item.message;
-
         Label label = new Label("") { use_markup=true, xalign=0, selectable=true, wrap=true, wrap_mode=Pango.WrapMode.WORD_CHAR, vexpand=true, visible=true };
         string markup_text = message.body;
         if (markup_text.length > 10000) {
             markup_text = markup_text.substring(0, 10000) + " [" + _("Message too long") + "]";
         }
+        //xi (c) ThibG
+        Gtk.drag_dest_unset(label);
+        //xi (c) ThibG
         if (message_item.message.body.has_prefix("/me")) {
             markup_text = markup_text.substring(3);
         }
