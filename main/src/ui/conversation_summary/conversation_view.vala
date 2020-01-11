@@ -36,6 +36,17 @@ public class ConversationView : Box, Plugins.ConversationItemCollection, Plugins
     private bool at_current_content = true;
     private bool reload_messages = true;
 
+//xi (c) by ThibG
+    enum Target {
+      URI_LIST,
+      STRING
+    }
+
+    const TargetEntry[] target_list = {
+      { "text/uri-list",0, Target.URI_LIST},
+    };
+//xi (c) by ThibG
+
     public ConversationView init(StreamInteractor stream_interactor) {
         this.stream_interactor = stream_interactor;
         scrolled.vadjustment.notify["upper"].connect_after(on_upper_notify);
@@ -58,6 +69,11 @@ public class ConversationView : Box, Plugins.ConversationItemCollection, Plugins
             return true;
         });
 
+//xi
+drag_dest_unset(main);
+drag_dest_set(scrolled, DestDefaults.ALL, target_list, Gdk.DragAction.COPY);
+scrolled.drag_data_received.connect(this.on_drag_data_received);
+//xi
         return this;
     }
 
@@ -183,6 +199,30 @@ public class ConversationView : Box, Plugins.ConversationItemCollection, Plugins
 
         inserted_item(item);
     }
+//xi (c) ThibG
+    public void on_drag_data_received(Widget widget, Gdk.DragContext context,
+                                       int x, int y,
+                                       SelectionData selection_data,
+                                       uint target_type, uint time) {
+         if ((selection_data != null) && (selection_data.get_length() >= 0)) {
+             switch (target_type) {
+             case Target.URI_LIST:
+                 string[] uris = selection_data.get_uris();
+                 for (int i = 0; i < uris.length; i++) {
+                   try {
+                     string filename = Filename.from_uri(uris[i]);
+                     stream_interactor.get_module(FileManager.IDENTITY).send_file(filename, conversation);
+                   } catch (Error err) {
+                   }
+                 }
+                 break;
+             default:
+                 break;
+             }
+         }
+     }
+//xi (c) ThibG
+
 
     private void remove_item(Plugins.MetaConversationItem item) {
         ConversationItemSkeleton? skeleton = item_item_skeletons[item];
